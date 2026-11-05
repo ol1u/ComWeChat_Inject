@@ -4,6 +4,7 @@
 #include "framework.h"
 #include "WeChatHook.h"
 #include <Windows.h>
+#include "auto_login.h"
 #include "utils.h"
 
 int GetPortFromEnv() {  
@@ -30,6 +31,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
 	BOOL result;
 	DWORD PID = ProcessNameFindPID(WeChatProcessName);
+	int autoLoginDetect = RunWeChatAutoLoginDetectMode(lpCmdLine, PID, GetPortFromEnv());
+	if (autoLoginDetect >= 0)
+	{
+		return autoLoginDetect;
+	}
+	InitializeWeChatAutoLoginProcess();
 	if (PID == 0)
 	{
 		return 0;
@@ -41,6 +48,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		{
 			return 0;
 		}
+		MaybeStartWeChatAutoLogin(PID, GetPortFromEnv());
 	}
 	DialogBox(hInstance, MAKEINTRESOURCE(ID_MAIN), NULL, DialogProc);
     return 0;
@@ -59,7 +67,14 @@ INT_PTR CALLBACK DialogProc(_In_ HWND hDlg, _In_ UINT message, _In_ WPARAM wPara
 		if (LOWORD(wParam) == INJECT)
 		{
 			DWORD PID = ProcessNameFindPID(WeChatProcessName);
-			StartListen(PID, GetPortFromEnv());
+			if (PID == 0)
+			{
+				return 0;
+			}
+			if (StartListen(PID, GetPortFromEnv()))
+			{
+				MaybeStartWeChatAutoLogin(PID, GetPortFromEnv());
+			}
 		}
 		if (LOWORD(wParam) == UNJECT)
 		{

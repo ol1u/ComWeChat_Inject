@@ -130,6 +130,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="auto_login.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="targetver.h" />
@@ -137,6 +138,7 @@
     <ClInclude Include="WeChatHook.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="auto_login.cpp" />
     <ClCompile Include="utils.cpp" />
     <ClCompile Include="WeChatHook.cpp" />
   </ItemGroup>
